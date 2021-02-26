@@ -11,20 +11,22 @@ joinButton.addEventListener('click',function() {
         alert("Please enter a room name")
     }
     else{
-        navigator.getUserMedia(
+        navigator.mediaDevices.getUserMedia(
             { audio: true, 
             video: { width: 1280, height: 720 }, 
-        },
-        function(stream) {
+        })
+        .then(function (stream) {
+        userStream = stream;
+        divVideoChatLobby.style = "display:none";
         userVideo.srcObject = stream;
         userVideo.onloadedmetdata = function(e) {
             userVideo.play();
         };
     
-    },
-        function(){
-            console.log("Counld't access user media");
+    })
+        .catch(function(err){
+            alert("Counld't access user media");
         }
         );
     }
-})
+});
