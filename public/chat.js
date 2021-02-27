@@ -1,3 +1,4 @@
+var socket = io.connect("http://localhost:4000");
 var divVideoChatLobby = document.getElementById("video-chat-lobby");
 var divVideoChat = document.getElementById("video-chat-room");
 var joinButton = document.getElementById("join");
@@ -11,7 +12,9 @@ joinButton.addEventListener('click',function() {
         alert("Please enter a room name")
     }
     else{
-        navigator.mediaDevices.getUserMedia(
+        socket.emit("join",roomInput.value)
+        navigator.mediaDevices
+        .getUserMedia(
             { audio: true, 
             video: { width: 1280, height: 720 }, 
         })
@@ -19,7 +22,7 @@ joinButton.addEventListener('click',function() {
         userStream = stream;
         divVideoChatLobby.style = "display:none";
         userVideo.srcObject = stream;
-        userVideo.onloadedmetdata = function(e) {
+        userVideo.onloadedmetadata = function(e) {
             userVideo.play();
         };
     
