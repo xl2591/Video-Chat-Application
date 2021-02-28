@@ -96,6 +96,7 @@ socket.on("ready",function(){
     }
 });
 socket.on("candidate",function(candidate){
+    var icecandidate = new RTCIceCandidate(candidate);
     rtcPeerConnection.addIceCandidate(candidate);
 });
 socket.on("offer",function(offer){
