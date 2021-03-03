@@ -1,16 +1,16 @@
-var socket = io.connect("http://localhost:4000");
-var divVideoChatLobby = document.getElementById("video-chat-lobby");
-var divVideoChat = document.getElementById("video-chat-room");
-var joinButton = document.getElementById("join");
-var userVideo = document.getElementById("user-video");
-var peerVideo = document.getElementById("peer-video");
-var roomInput = document.getElementById("roomName");
-var roomName ;
-var creator = false;
-var RTCPeerConnection;
-var userStream; 
+let socket = io.connect("http://localhost:4000");
+let divVideoChatLobby = document.getElementById("video-chat-lobby");
+let divVideoChat = document.getElementById("video-chat-room");
+let joinButton = document.getElementById("join");
+let userVideo = document.getElementById("user-video");
+let peerVideo = document.getElementById("peer-video");
+let roomInput = document.getElementById("roomName");
+let roomName ;
+let creator = false;
+let RTCPeerConnection;
+let userStream; 
 
-var iceServers ={ iceServers:
+let iceServers ={ iceServers:
     [
     {urls: "stun:stun.services.mozilla.com"},
     {urls: "stun:stun.l.google.com:19302"},
@@ -66,7 +66,7 @@ socket.on("joined",function(){
     userVideo.onloadedmetadata = function(e) {
         userVideo.play();
     };
-
+    socket.emit("ready",roomName);
 })
     .catch(function(err){
         alert("Counld't access user media");
@@ -81,24 +81,27 @@ socket.on("ready",function(){
 
         rtcPeerConnection = new RTCPeerConnection(iceServers); 
         rtcPeerConnection.onicecandidate = OnIceCandidateFunction;
-        rtcPeerConnection.ontrack = OnTrackfunction;
-        rtcPeerConnection.addTrack(userStream.getTrack([0],userStream));
-        rtcPeerConnection.addTrack(userStream.getTrack([1],userStream));
-        rtcPeerConnection.createOffer(
-            function(offer){
+        rtcPeerConnection.ontrack = OnTrackFunction;
+        rtcPeerConnection.addTrack(userStream.getTracks([0],userStream));
+        rtcPeerConnection.addTrack(userStream.getTracks([1],userStream));
+        rtcPeerConnection.createOffer()
+            .then((offer) => {
                 rtcPeerConnection.setLocalDescription(offer);
                 socket.emit("offer",offer,roomName);
-            },
-            function(error){
-                console.log(error);
-            }
-        );
+            })
+            .catch((error) => {console.log(error);})
+         
+          
+        
     }
 });
+//Triggerd on receiving an ice candidate from the peer
 socket.on("candidate",function(candidate){
     var icecandidate = new RTCIceCandidate(candidate);
-    rtcPeerConnection.addIceCandidate(candidate);
+    rtcPeerConnection.addIceCandidate(icecandidate);
 });
+
+//Triggerd on receiving an offer from the person who created the room
 socket.on("offer",function(offer){
     if (!creator){
 
@@ -108,17 +111,17 @@ socket.on("offer",function(offer){
         rtcPeerConnection.addTrack(userStream.getTrack([0],userStream));
         rtcPeerConnection.addTrack(userStream.getTrack([1],userStream));
         rtcPeerConnection.setRemoteDescription(offer);
-        rtcPeerConnection.createAnswer(
-            function(answer){
+        rtcPeerConnection.createAnswer()
+
+            .then((answer) => {
                 rtcPeerConnection.setLocalDescription(answer);
-                socket.emit("answer",answer,roomName);
-            },
-            function(error){
-                console.log(error) 
-            } 
-        );
+                socket.emit("offer",offer,roomName);
+            })
+            .catch((error) => {console.log(error);})
     }
 });
+
+//Triggered on receiving and answer from the person who joined the room
 socket.on("answer",function(answer){
     rtcPeerConnection.setRemoteDescription(answer);
 });

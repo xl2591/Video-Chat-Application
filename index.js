@@ -10,7 +10,7 @@ let server = app.listen(4000, function () {
   
   //Upgrades the server to accept websockets.
   
-  var io = socket(server);
+  let io = socket(server);
   io.on("connection", function(socket){
 
     console.log("User Connected :" + socket.id);
@@ -36,7 +36,7 @@ let server = app.listen(4000, function () {
       }
       console.log(rooms);
     })
-    socket.on("ready",function(ready,roomName){
+    socket.on("ready",function(roomName){
 
       socket.broadcast.to(roomName).emit("ready");
     });
