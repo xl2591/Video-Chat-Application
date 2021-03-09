@@ -5,9 +5,9 @@ let joinButton = document.getElementById("join");
 let userVideo = document.getElementById("user-video");
 let peerVideo = document.getElementById("peer-video");
 let roomInput = document.getElementById("roomName");
-let roomName ;
+let roomName;
 let creator = false;
-let RTCPeerConnection;
+let rtcPeerConnection;
 let userStream; 
 
 let iceServers ={ iceServers:
@@ -24,6 +24,7 @@ joinButton.addEventListener('click',function() {
         alert("Please enter a room name")
     }
     else{
+        roomName = roomInput.value;
         socket.emit("join",roomName);
     }
 });
@@ -43,7 +44,7 @@ socket.on("created",function(){
     userVideo.onloadedmetadata = function(e) {
         userVideo.play();
     };
-    socket.emit("ready",roomName);
+    
 }) 
     .catch(function(err){
         alert("Counld't access user media");
@@ -76,15 +77,17 @@ socket.on("joined",function(){
 socket.on("full",function(){
     alert("Room is full, Can't join")
 });
+
 socket.on("ready",function(){
     if (creator){
 
         rtcPeerConnection = new RTCPeerConnection(iceServers); 
         rtcPeerConnection.onicecandidate = OnIceCandidateFunction;
         rtcPeerConnection.ontrack = OnTrackFunction;
-        rtcPeerConnection.addTrack(userStream.getTracks([0],userStream));
-        rtcPeerConnection.addTrack(userStream.getTracks([1],userStream));
-        rtcPeerConnection.createOffer()
+        rtcPeerConnection.addTrack(userStream.getTracks()[0],userStream);
+        rtcPeerConnection.addTrack(userStream.getTracks()[1],userStream);
+        rtcPeerConnection
+            .createOffer()
             .then((offer) => {
                 rtcPeerConnection.setLocalDescription(offer);
                 socket.emit("offer",offer,roomName);
@@ -107,15 +110,16 @@ socket.on("offer",function(offer){
 
         rtcPeerConnection = new RTCPeerConnection(iceServers); 
         rtcPeerConnection.onicecandidate = OnIceCandidateFunction;
-        rtcPeerConnection.ontrack = OnTrackfunction;
-        rtcPeerConnection.addTrack(userStream.getTrack([0],userStream));
-        rtcPeerConnection.addTrack(userStream.getTrack([1],userStream));
+        rtcPeerConnection.ontrack = OnTrackFunction;
+        rtcPeerConnection.addTrack(userStream.getTracks()[0],userStream);
+        rtcPeerConnection.addTrack(userStream.getTracks()[1],userStream);
         rtcPeerConnection.setRemoteDescription(offer);
-        rtcPeerConnection.createAnswer()
+        rtcPeerConnection
+            .createAnswer()
 
             .then((answer) => {
                 rtcPeerConnection.setLocalDescription(answer);
-                socket.emit("offer",offer,roomName);
+                socket.emit("offer", answer,roomName);
             })
             .catch((error) => {console.log(error);})
     }
@@ -127,11 +131,13 @@ socket.on("answer",function(answer){
 });
 
 function OnIceCandidateFunction(event){
-if (event.candidate){socket.emit("candidate",event.candidate,roomName);}
+    console.log("Candidate");
+if (event.candidate){
+    socket.emit("candidate", event.candidate,roomName);}
 
 };
 
-function OnTrackfunction(event) {
+function OnTrackFunction(event) {
    
     peerVideo.srcObject = event.streams[0];
     peerVideo.onloadedmetadata = function(e) {

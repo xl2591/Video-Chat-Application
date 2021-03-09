@@ -37,17 +37,22 @@ let server = app.listen(4000, function () {
       console.log(rooms);
     })
     socket.on("ready",function(roomName){
-
-      socket.broadcast.to(roomName).emit("ready");
+     socket.broadcast.to(roomName).emit("ready");
     });
+    
+    
     socket.on("candidate",function(candidate,roomName){
 
       socket.broadcast.to(roomName).emit("candidate",candidate);
     });
-    socket.on("offer",function(offer,roomName){
+    
+    
+    socket.on("offer",function (offer,roomName){
 
-      socket.broadcast.to(roomName).emit("offer".offer);
+      socket.broadcast.to(roomName).emit("offer", offer);
     });
+    
+    
     socket.on("answer",function(answer,roomName){
 
       socket.broadcast.to(roomName).emit("answer",answer);
