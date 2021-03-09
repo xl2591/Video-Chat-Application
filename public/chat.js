@@ -34,7 +34,7 @@ socket.on("created",function(){
     navigator.mediaDevices
     .getUserMedia( 
         { audio: false, 
-        video: { width: 1280, height: 720 }, 
+        video: { width: 500, height: 500 }, 
     })
     .then(function (stream) {
     userStream = stream;
@@ -57,7 +57,7 @@ socket.on("joined",function(){
     navigator.mediaDevices
     .getUserMedia(
         { audio: false, 
-        video: { width: 1280, height: 720 }, 
+        video: { width: 500, height: 500 }, 
     })
     .then(function (stream) {
     userStream = stream;

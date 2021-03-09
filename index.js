@@ -17,8 +17,8 @@ let server = app.listen(4000, function () {
 
     socket.on("join",function(roomName){
 
-      var rooms = io.sockets.adapter.rooms;
-      var room = rooms.get(roomName);
+      let rooms = io.sockets.adapter.rooms;
+      let room = rooms.get(roomName);
       console.log(rooms);
       
       if(room == undefined){

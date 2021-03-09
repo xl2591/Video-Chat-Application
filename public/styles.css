@@ -63,3 +63,15 @@ button {
   padding: 12px 0;
   width: 100%;
 }
+#video-chat-room {
+  display: flex;
+  justify-content: center;
+}
+
+#user-video{
+  padding: 20px;
+}
+
+#peer-video{
+  padding: 20px;
+}
