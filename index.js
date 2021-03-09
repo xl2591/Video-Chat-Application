@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const socket = require("socket.io");
 const app = express();
 
@@ -11,8 +11,8 @@ let server = app.listen(4000, function () {
   //Upgrades the server to accept websockets.
   
   let io = socket(server);
+  //Triggered when a client is connected.
   io.on("connection", function(socket){
-
     console.log("User Connected :" + socket.id);
 
     socket.on("join",function(roomName){
@@ -46,7 +46,7 @@ let server = app.listen(4000, function () {
       socket.broadcast.to(roomName).emit("candidate",candidate);
     });
     
-    
+
     socket.on("offer",function (offer,roomName){
 
       socket.broadcast.to(roomName).emit("offer", offer);

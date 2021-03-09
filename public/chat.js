@@ -34,7 +34,7 @@ socket.on("created",function(){
   
     navigator.mediaDevices
     .getUserMedia( 
-        { audio: false, 
+        { audio: true, 
         video: { width: 500, height: 500 }, 
     })
     .then(function (stream) {
@@ -119,7 +119,7 @@ socket.on("offer",function(offer){
 
             .then((answer) => {
                 rtcPeerConnection.setLocalDescription(answer);
-                socket.emit("offer", answer,roomName);
+                socket.emit("answer", answer,roomName);
             })
             .catch((error) => {console.log(error);})
     }
