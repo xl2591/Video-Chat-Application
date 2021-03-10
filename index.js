@@ -23,11 +23,11 @@ let server = app.listen(4000, function () {
       
       if(room == undefined){
         socket.join(roomName);
-        console.log("Room Created");
+     
         socket.emit("created")
       } else if (room.size == 1){
         socket.join(roomName);
-        console.log("Room Joined");
+       
         socket.emit("joined")
       } 
       else {
